@@ -64,15 +64,14 @@ class robanalysis(object):
         self.os_affinity_df = pd.DataFrame(columns=range(0,self.Nr_trials))
         
         self.ss_affinity_df = self.ss_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_ss))) #Store the intial affinity values (should all be the same), before any mutation
-                                                                                                          #note that these columns will have row-index 0 (signifying 0 mutations)
-        
+                                                                                                       #note that these columns will have row-index 0 (signifying 0 mutations)
         self.os_affinity_df = self.os_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_os)))
         
-        for i in range (1,Nr_mutations+1):
+        # for i in range (1,Nr_mutations+1):
             
-            #call mutation function to mutate 
+        #     #call mutation function to mutate 
         
-            self.ss_affinity_df.append = self.__pwm_scan(self.Reg_ss) #scan after mutation
+        #     self.ss_affinity_df.append = self.__pwm_scan(self.Reg_ss) #scan after mutation
         
         
         
@@ -92,7 +91,7 @@ class robanalysis(object):
         
         PWM_Kdref[PWM_Kdref < 1] = 1 #minimum value is 1
                 
-        self.pwm = PWM_Kdref
+        self.PWM_Kdref = PWM_Kdref
         
         return
         
@@ -148,7 +147,7 @@ class robanalysis(object):
         
         PWM_Kdref_rc = self.PWM_Kdref[::-1, ::-1] # Reverse complementary PWM
         
-        vector_affinities = np.zeros([seq_vec.shape,1], float)
+        vector_affinities = np.zeros([seq_vec.shape[0],1], float)
         
         
         # The main loop that scans through the regulatory sequences
@@ -166,7 +165,7 @@ class robanalysis(object):
                                                     #[columns: (first member's col index), (second member's col index), etc.])
                                                     #note that the score here is the Kd/Kdref, we will preserve the highest score
                                                     #and then before registering it in the dataframe, multiply it by the Kd
-                if new_score < score:   #keep around the highest score until this point
+                if new_score < score:   #keep only the highest score 
                     score = new_score
                 
                 new_score = np.prod( PWM_Kdref_rc[window, cols] ) #technically it should not matter if the highest affinity site
