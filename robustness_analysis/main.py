@@ -31,12 +31,11 @@ class robanalysis(object):
         self.os_affinity_vec: affinity vector, with index corresponding to Reg_os
         """
         
+        self.Nr_trials = None
         self.Reg_ss = None
         self.Reg_os = None 
         self.PWM_Kdref = None
         self.Kd_consensus = None
-        self.ss_affinity_vec = None
-        self.os_affinity_vec = None
         self.ss_affinity_df = None
         self.os_affinity_df = None
         
@@ -57,10 +56,19 @@ class robanalysis(object):
         """
         
         self.Kd_consensus = Kd_cons
+             
+        self.ss_affinity_df = pd.DataFrame(columns=range(1,self.Nr_trials+1)) #create dataframe to store the results of simulation (rows = #mutations, columns=sequence#)
         
-        for i in range (Nr_mutations)
+        self.os_affinity_df = pd.DataFrame(columns=range(1,self.Nr_trials+1))
         
-        self.ss_affinity_df = __pwm_scan(Reg_ss, i)
+        self.ss_affinity_df.append = Kd_cons*self.__pwm_scan(self.Reg_ss) #Store the intial affinity values (should all be the same), before any mutation
+        self.os_affinity_df.append = Kd_cons*self.__pwm_scan(self.Reg_os)
+        
+        for i in range (1,Nr_mutations+1):
+            
+            #conduct mutation
+        
+            self.ss_affinity_df.append = self.__pwm_scan(self.Reg_ss) #scan after mutation
         
         
         
@@ -92,6 +100,7 @@ class robanalysis(object):
             seq_os: the overlapping-site DNA sequence
             nr_trials: number of trials of regulatory sequences to analyze
         """
+        self.Nr_trials = nr_trials
         
         numeric_ss = self.__str_to_np_seq(seq_ss) # Convert the single site sequence into numeric encoding (a np.array)
         numeric_os = self.__str_to_np_seq(seq_os) # Convert the overlapping site sequence into numeric encoding (a np.array)
