@@ -103,12 +103,14 @@ class robanalysis(object):
         n_mer = self.PWM_Kdref.shape[1]    # length (num of cols) of the weight matrix
         cols = np.arange(n_mer) # column indices for PWM from 0 to (n_mer-1)
         PWM_Kdref_rc = PWM_Kdref[::-1, ::-1] # Reverse complementary PWM
-
+        self.ss_affinity_vec = np.zeros([Reg_ss.shape,1], float)
+        
         # Create an empty data frame
-        colnames = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
+        #colnames = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
-        self.ss_affinity_df = pd.DataFrame({name:[] for name in colnames},
-                            columns=colnames)
+        #self.ss_affinity_df = pd.DataFrame({name:[] for name in colnames},
+                            #columns=colnames)
+        
 
         # The main loop that scans through the regulatory sequences
         
@@ -135,8 +137,9 @@ class robanalysis(object):
                 if new_score < score:
                     score = new_score
                     
-            self.ss_affinity_df[]
-            score = 50000
+            self.ss_affinity_vec[j] = score #record the lowest Kd/Kdref for the jth regulatory sequence 
+            
+            score = 50000 #reset the score to something unattainable
                 
                 hits.loc[len(hits)] = [score                       , # Score
                                            self.__np_to_str_seq(window), # Sequence
