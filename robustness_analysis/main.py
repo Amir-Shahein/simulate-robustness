@@ -10,6 +10,7 @@ Created on Tue Apr 14 20:39:12 2020
 import re
 import numpy as np
 import pandas as pd
+import random
 
 
 class robanalysis(object):
@@ -67,12 +68,20 @@ class robanalysis(object):
                                                                                                        #note that these columns will have row-index 0 (signifying 0 mutations)
         self.os_affinity_df = self.os_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_os)),ignore_index=True)
         
-        # for i in range (1,Nr_mutations+1):
+        for i in range(1,Nr_mutations+1):
             
-        #     #call mutation function to mutate 
+            #randomly substitution-mutate each sequence in the sequence vectors
+            self.Reg_ss = self.substitution_mutate(self.Reg_ss) #seems instinctive to copy the vector, mutate the copy, and then update the original using the mutated copy...
+            
+            self.Reg_os = self.substitution_mutate(self.Reg_os)
+            
+            #check the affinities of the new sequence vectors, and record them in the dataframe
+            self.ss_affinity_df = self.ss_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_ss)),ignore_index=True)
+            
+            self.os_affinity_df = self.os_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_os)),ignore_index=True)
+            
+            
         
-        #     self.ss_affinity_df.append = self.__pwm_scan(self.Reg_ss) #scan after mutation
-                        
     def load_kdref_pwm(self, filename, n_mer):
         """
         Args: 
@@ -124,7 +133,7 @@ class robanalysis(object):
                'G':2, 'g':2,
                'T':3, 't':3,}
 
-        for i, base in enumerate(str_seq): #i is the index, base is the letter  in str_seq
+        for i, base in enumerate(str_seq): #i is the index, base is the letter  in str_seqs
             np_seq[i] = ref.get(base) #ref is a dictionary, using get allows to use base as a key to get associated numeric value
 
         return np_seq
@@ -176,3 +185,31 @@ class robanalysis(object):
             score = 50000 #reset the score to something unattainable
             
         return vector_affinities
+    
+    
+    def substitution_mutate(self, seq_vec):
+        
+        copy_seq_vec = np.copy(seq_vec)
+        
+        for j in range(copy_seq_vec.shape[0]):
+            
+            rand_ind = random.randint(0,copy_seq_vec.shape[1]-1)
+            
+            if copy_seq_vec[j,rand_ind] == 0:
+                copy_seq_vec[j,rand_ind] = random.choice([1,2,3])
+                
+            elif copy_seq_vec[j,rand_ind] == 1:
+                copy_seq_vec[j,rand_ind] = random.choice([0,2,3])
+                
+            elif copy_seq_vec[j,rand_ind] == 2:
+                copy_seq_vec[j,rand_ind] = random.choice([0,1,3])
+                
+            elif copy_seq_vec[j,rand_ind] == 3:
+                copy_seq_vec[j,rand_ind] = random.choice([0,1,2])
+                
+        return copy_seq_vec
+        
+        
+        
+        
+        
