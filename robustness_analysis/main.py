@@ -40,6 +40,31 @@ class robanalysis(object):
         self.ss_affinity_df = None
         self.os_affinity_df = None
         
+    def launch_simulation(self, Kd_cons, Nr_mutations):
+        """
+        This is the main function that iterates through:
+            >PWM scanning the regulatory sequences by calling __pwm_scan, 
+            >multiplying the affinity vectors output by the Kd of the consensus
+            >storing the affinity vector values as columns of an affinity dataframe
+            >calling a function to randomly mutate a single base of each regulatory sequence 
+        
+        Args:
+            Kd_consensus: Kd of the consensus sequence.
+            Nr_mutations: corresponds to the number of iterations to run through
+
+        Returns:
+            fills out the self.ss_affinity_df and self.os_affinity_df:
+        """
+        
+        self.Kd_consensus = Kd_cons
+        
+        for i in range (Nr_mutations)
+        
+        self.ss_affinity_df = __pwm_scan(Reg_ss, i)
+        
+        
+        
+        
     def load_kdref_pwm(self, filename, n_mer):
         """
         Args: 
@@ -56,6 +81,8 @@ class robanalysis(object):
         PWM_Kdref[PWM_Kdref < 1] = 1 #minimum value is 1
                 
         self.pwm = PWM_Kdref
+        
+        return
         
     def load_sequence(self, seq_ss, seq_os, nr_trials):
         """
@@ -94,24 +121,23 @@ class robanalysis(object):
 
         return np_seq
 
-    def __pwm_scan(self, seq_vec, affinity_vec, iteration_nr):
+    def __pwm_scan(self, seq_vec):
         """
-        The core function that performs PWM (PSM) scan
-        through the (genomic) sequence.
+        The core function that performs PWM scan
+        through the sequence and returns a vector of the values of the highest affinity sites.
         """
 
         n_mer = self.PWM_Kdref.shape[1]    # length (num of cols) of the weight matrix
+        
         cols = np.arange(n_mer) # column indices for PWM from 0 to (n_mer-1)
-        PWM_Kdref_rc = PWM_Kdref[::-1, ::-1] # Reverse complementary PWM
-        affinity_vec = np.zeros([seq_vec.shape,1], float)
         
-        # Create an empty data frame
-        #colnames = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
-
-        #self.ss_affinity_df = pd.DataFrame({name:[] for name in colnames},
-                            #columns=colnames)
+        score = 50000
         
-
+        PWM_Kdref_rc = self.PWM_Kdref[::-1, ::-1] # Reverse complementary PWM
+        
+        vector_affinities = np.zeros([seq_vec.shape,1], float)
+        
+        
         # The main loop that scans through the regulatory sequences
         
         for j in range(seq_vec.shape[0]): #iterate over every member of Reg_ss and Reg_os
@@ -130,33 +156,15 @@ class robanalysis(object):
                 if new_score < score:   #keep around the highest score until this point
                     score = new_score
                 
-                new_score = np.prod( self.PWM_Kdref_rc[window, cols] ) #technically it should not matter if the highest affinity site
+                new_score = np.prod( PWM_Kdref_rc[window, cols] ) #technically it should not matter if the highest affinity site
                                                                        #is on the other strand --> only one site will dominate in this model
                                                                        #note: since seeding pre-sites on forward strand, unlikely other one will
                                                                         #win, but this is more general.
                 if new_score < score:
                     score = new_score
                     
-            affinity_vec[j] = score #record the lowest Kd/Kdref for the jth regulatory sequence 
+            vector_affinities[j] = score #record the lowest Kd/Kdref for the jth regulatory sequence 
             
-            score = 50000 #reset the score to something unattainable (STOPPED HERE
-            )
-                
-                hits.loc[len(hits)] = [score                       , # Score
-                                           self.__np_to_str_seq(window), # Sequence
-                                           i + 1                       , # Start
-                                           i + n_mer                   , # End
-                                           '+'                         ] # Strand
-    
-                # --- The most important line of code ---
-                #     Use integer coding to index the correct score from column 0 to (n_mer-1)
-                score = np.prod( self.PWM_Kdref[window, cols] )
-    
-                if score > thres:
-                    hits.loc[len(hits)] = [score                       , # Score
-                                           self.__np_to_str_seq(window), # Sequence
-                                           i + 1                       , # Start
-                                           i + n_mer                   , # End
-                                           '-'                         ] # Strand
-
-        return hits
+            score = 50000 #reset the score to something unattainable
+            
+        return vector_affinities
