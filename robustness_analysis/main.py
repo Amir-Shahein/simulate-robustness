@@ -94,7 +94,7 @@ class robanalysis(object):
 
         return np_seq
 
-    def __pwm_scan(self, iteration):
+    def __pwm_scan(self, seq_vec, affinity_vec, iteration_nr):
         """
         The core function that performs PWM (PSM) scan
         through the (genomic) sequence.
@@ -103,7 +103,7 @@ class robanalysis(object):
         n_mer = self.PWM_Kdref.shape[1]    # length (num of cols) of the weight matrix
         cols = np.arange(n_mer) # column indices for PWM from 0 to (n_mer-1)
         PWM_Kdref_rc = PWM_Kdref[::-1, ::-1] # Reverse complementary PWM
-        self.ss_affinity_vec = np.zeros([Reg_ss.shape,1], float)
+        affinity_vec = np.zeros([seq_vec.shape,1], float)
         
         # Create an empty data frame
         #colnames = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
@@ -114,11 +114,11 @@ class robanalysis(object):
 
         # The main loop that scans through the regulatory sequences
         
-        for j in range(self.Reg_ss.shape[0]): #iterate over every member of Reg_ss and Reg_os
+        for j in range(seq_vec.shape[0]): #iterate over every member of Reg_ss and Reg_os
             
-            for i in range(self.Reg_ss.shape[1] - n_mer + 1): #iterate over every base in a given member of Reg_ss and Reg_os
+            for i in range(seq_vec.shape[1] - n_mer + 1): #iterate over every base in a given member of Reg_ss and Reg_os
     
-                window = self.Reg_ss[j,i:(i+n_mer)] #pull out the sequence we're comparing the PWM against.
+                window = seq_vec[j,i:(i+n_mer)] #pull out the sequence we're comparing the PWM against.
     
                 # --- The most important line of code ---
                 #     Use integer coding to index the correct score from column 0 to (n_mer-1)
@@ -137,9 +137,10 @@ class robanalysis(object):
                 if new_score < score:
                     score = new_score
                     
-            self.ss_affinity_vec[j] = score #record the lowest Kd/Kdref for the jth regulatory sequence 
+            affinity_vec[j] = score #record the lowest Kd/Kdref for the jth regulatory sequence 
             
-            score = 50000 #reset the score to something unattainable
+            score = 50000 #reset the score to something unattainable (STOPPED HERE
+            )
                 
                 hits.loc[len(hits)] = [score                       , # Score
                                            self.__np_to_str_seq(window), # Sequence
