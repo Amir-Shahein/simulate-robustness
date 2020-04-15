@@ -26,9 +26,11 @@ class robanalysis(object):
         
         self.Kd_consensus: Kd of the consensus sequence
         
-        self.ss_affinity_vec: affinity vector, with index corresponding to Reg_ss
+        self.ss_affinity_df: dataframe for single site, with row headers corresponding
+        to the number of mutations, and columns corresponding to the trial# (starting
+        at zero... so if 50 trials, then labelled from 0 to 49)
         
-        self.os_affinity_vec: affinity vector, with index corresponding to Reg_os
+        self.os_affinity_df: overlapping site equivalent
         """
         
         self.Nr_trials = None
@@ -57,16 +59,18 @@ class robanalysis(object):
         
         self.Kd_consensus = Kd_cons
              
-        self.ss_affinity_df = pd.DataFrame(columns=range(1,self.Nr_trials+1)) #create dataframe to store the results of simulation (rows = #mutations, columns=sequence#)
+        self.ss_affinity_df = pd.DataFrame(columns=range(0,self.Nr_trials)) #create dataframe to store the results of simulation (rows = #mutations, columns=sequence#)
         
-        self.os_affinity_df = pd.DataFrame(columns=range(1,self.Nr_trials+1))
+        self.os_affinity_df = pd.DataFrame(columns=range(0,self.Nr_trials))
         
-        self.ss_affinity_df.append = Kd_cons*self.__pwm_scan(self.Reg_ss) #Store the intial affinity values (should all be the same), before any mutation
-        self.os_affinity_df.append = Kd_cons*self.__pwm_scan(self.Reg_os)
+        self.ss_affinity_df = self.ss_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_ss))) #Store the intial affinity values (should all be the same), before any mutation
+                                                                                                          #note that these columns will have row-index 0 (signifying 0 mutations)
+        
+        self.os_affinity_df = self.os_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_os)))
         
         for i in range (1,Nr_mutations+1):
             
-            #conduct mutation
+            #call mutation function to mutate 
         
             self.ss_affinity_df.append = self.__pwm_scan(self.Reg_ss) #scan after mutation
         
