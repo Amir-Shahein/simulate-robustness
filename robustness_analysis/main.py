@@ -63,19 +63,16 @@ class robanalysis(object):
         
         self.os_affinity_df = pd.DataFrame(columns=range(0,self.Nr_trials))
         
-        self.ss_affinity_df = self.ss_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_ss))) #Store the intial affinity values (should all be the same), before any mutation
+        self.ss_affinity_df = self.ss_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_ss)),ignore_index=True) #Store the intial affinity values (should all be the same), before any mutation
                                                                                                        #note that these columns will have row-index 0 (signifying 0 mutations)
-        self.os_affinity_df = self.os_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_os)))
+        self.os_affinity_df = self.os_affinity_df.append(pd.Series(Kd_cons*self.__pwm_scan(self.Reg_os)),ignore_index=True)
         
         # for i in range (1,Nr_mutations+1):
             
         #     #call mutation function to mutate 
         
         #     self.ss_affinity_df.append = self.__pwm_scan(self.Reg_ss) #scan after mutation
-        
-        
-        
-        
+                        
     def load_kdref_pwm(self, filename, n_mer):
         """
         Args: 
@@ -113,7 +110,6 @@ class robanalysis(object):
         
         return
 
-
     def __str_to_np_seq(self, str_seq):
         """
         A custom DNA base coding system with numbers.
@@ -147,7 +143,7 @@ class robanalysis(object):
         
         PWM_Kdref_rc = self.PWM_Kdref[::-1, ::-1] # Reverse complementary PWM
         
-        vector_affinities = np.zeros([seq_vec.shape[0],1], float)
+        vector_affinities = np.zeros((seq_vec.shape[0]),float)
         
         
         # The main loop that scans through the regulatory sequences
