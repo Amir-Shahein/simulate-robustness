@@ -6,7 +6,7 @@ Created on Tue Apr 14 20:39:12 2020
 @author: transcend
 """
 
-
+import seaborn as sns
 import re
 import numpy as np
 import pandas as pd
@@ -28,9 +28,12 @@ class robanalysis(object):
         
         self.Kd_consensus: Kd of the consensus sequence
         
-        self.ss_affinity_df: dataframe for single site, with row headers corresponding
-        to the number of mutations, and columns corresponding to the trial# (starting
-        at zero... so if 50 trials, then labelled from 0 to 49)
+        self.ss_affinity_df:  a dataframe that will store the single site reg. 
+        seq. affinity values before and after each mutation round, with row headers 
+        corresponding to the number of mutations, and columns corresponding to 
+        the trial# (starting at zero... so if 50 trials, then labelled from 0 to 49)
+    
+        os_affinity_df: equivalent but for the overlapping binding site reg. seq.
         
         self.os_affinity_df: overlapping site equivalent
         """
@@ -53,7 +56,7 @@ class robanalysis(object):
         
         Args:
             Kd_consensus: Kd of the consensus sequence.
-            Nr_mutations: corresponds to the number of iterations to run through
+            Nr_mutations: corresponds to the number of mutation iterations
 
         Returns:
             fills out the self.ss_affinity_df and self.os_affinity_df:
@@ -61,7 +64,7 @@ class robanalysis(object):
         
         self.Kd_consensus = Kd_cons
              
-        self.ss_affinity_df = pd.DataFrame(columns=range(0,self.Nr_trials)) #create dataframe to store the results of simulation (rows = #mutations, columns=sequence#)
+        self.ss_affinity_df = pd.DataFrame(columns=range(0,self.Nr_trials)) #create dataframe to store the results of simulation (rows = #mutations, columns = trial index)
         
         self.os_affinity_df = pd.DataFrame(columns=range(0,self.Nr_trials))
         
@@ -216,12 +219,22 @@ class robanalysis(object):
         self.os_affinity_df.mean(axis=1).plot(kind='bar')
         plt.xlabel('No. Mutations')
         plt.ylabel('Kd/Kd_consensus')
-        plt.ylim(0,25000)
+        plt.ylim(1,300)
         plt.show()
         self.ss_affinity_df.mean(axis=1).plot(kind='bar')
         plt.xlabel('No. Mutations')
         plt.ylabel('Kd/Kd_consensus')
-        plt.ylim(0,25000)
+        plt.ylim(1,300)
         plt.show()
-        
-        
+        # sns.violinplot(data=self.os_affinity_df.T, scale='count', cut=0, scale_hue=False) #.mean(axis=1).plot(kind='bar')
+        # plt.xlabel('No. Mutations')
+        # plt.ylabel('Kd/Kd_consensus')
+        # plt.yscale('log')
+        # plt.ylim(1,100000)
+        # plt.show()
+        # sns.violinplot(data=self.ss_affinity_df.T, scale='count', cut=0, scale_hue=False) #.mean(axis=1).plot(kind='bar')
+        # plt.xlabel('No. Mutations')
+        # plt.ylabel('Kd/Kd_consensus')
+        # plt.yscale('log')
+        # plt.ylim(1,100000)
+        # plt.show()
