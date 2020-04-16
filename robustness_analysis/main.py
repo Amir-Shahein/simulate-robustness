@@ -11,6 +11,7 @@ import re
 import numpy as np
 import pandas as pd
 import random
+import matplotlib.pyplot as plt
 
 
 class robanalysis(object):
@@ -148,7 +149,7 @@ class robanalysis(object):
         
         cols = np.arange(n_mer) # column indices for PWM from 0 to (n_mer-1)
         
-        score = 50000
+        score = 500000
         
         PWM_Kdref_rc = self.PWM_Kdref[::-1, ::-1] # Reverse complementary PWM
         
@@ -182,7 +183,7 @@ class robanalysis(object):
                     
             vector_affinities[j] = score #record the lowest Kd/Kdref for the jth regulatory sequence 
             
-            score = 50000 #reset the score to something unattainable
+            score = 500000 #reset the score to something unattainable
             
         return vector_affinities
     
@@ -208,8 +209,19 @@ class robanalysis(object):
                 copy_seq_vec[j,rand_ind] = random.choice([0,1,2])
                 
         return copy_seq_vec
+    
+    
+    def plot_mean_affinity(self):
         
-        
-        
+        self.os_affinity_df.mean(axis=1).plot(kind='bar')
+        plt.xlabel('No. Mutations')
+        plt.ylabel('Kd/Kd_consensus')
+        plt.ylim(0,25000)
+        plt.show()
+        self.ss_affinity_df.mean(axis=1).plot(kind='bar')
+        plt.xlabel('No. Mutations')
+        plt.ylabel('Kd/Kd_consensus')
+        plt.ylim(0,25000)
+        plt.show()
         
         
