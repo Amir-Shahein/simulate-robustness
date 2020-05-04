@@ -35,7 +35,6 @@ class robanalysis(object):
     
         os_affinity_df: equivalent but for the overlapping binding site reg. seq.
         
-        self.os_affinity_df: overlapping site equivalent
         """
         
         self.Nr_trials = None
