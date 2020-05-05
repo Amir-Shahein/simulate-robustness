@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 Created on Tue Apr 14 20:39:12 2020
 
 @author: transcend
+
+Uses material from Yu-Cheng Lin's Github project: pwm_scan (project accessed Feb. 28th 2020)
 """
 
 import seaborn as sns
@@ -96,7 +97,7 @@ class robanalysis(object):
         with open(filename, 'r') as fh:
             PWM_Kdref = [[float(B) for B in line.split()] for line in fh] #process the text file into a 2D list
         
-        PWM_Kdref = np.array(PWM_Kdref, dtype=float) #convert the 2D array into a 2D numpy array
+        PWM_Kdref = np.array(PWM_Kdref, dtype=float) #convert the 2D list into a 2D numpy array
         
         PWM_Kdref[PWM_Kdref < 1] = 1 #minimum value is 1
                 
